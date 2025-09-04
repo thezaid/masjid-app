@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>एडमिन पैनल</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;500;700&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --md-sys-color-primary: #6750A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
+            --md-sys-color-on-primary-container: #21005D;
+            --md-sys-color-secondary: #625B71;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #E8DEF8;
+            --md-sys-color-on-secondary-container: #1D192B;
+            --md-sys-color-error: #B3261E;
+            --md-sys-color-on-error: #FFFFFF;
+            --md-sys-color-error-container: #F9DEDC;
+            --md-sys-color-on-error-container: #410E0B;
+            --md-sys-color-background: #FFFBFE;
+            --md-sys-color-on-background: #1C1B1F;
+            --md-sys-color-surface: #FFFBFE;
+            --md-sys-color-on-surface: #1C1B1F;
+            --md-sys-color-surface-variant: #E7E0EC;
+            --md-sys-color-on-surface-variant: #49454F;
+            --md-sys-color-outline: #79747E;
+        }
+        body { font-family: 'Noto Serif Devanagari', sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-background); }
+        .top-app-bar { background-color: var(--md-sys-color-surface); }
+        .card { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
+        .btn-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        .btn-danger { background-color: var(--md-sys-color-error); color: var(--md-sys-color-on-primary); }
+        .form-input {
+            background-color: rgba(234, 221, 255, 0.3);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px var(--md-sys-color-primary-container);
+        }
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            transition: background-color 0.2s;
+            width: 48px;
+            height: 48px;
+        }
+        .icon-btn:hover { filter: brightness(95%); }
+        .form-input-special {
+            font-size: 1.5rem; font-weight: 700; padding: 0.5rem 0;
+            border: none; background: transparent; border-bottom: 2px dashed var(--md-sys-color-outline); border-radius: 0;
+            color: var(--md-sys-color-on-surface);
+        }
+        .form-input-special:focus { box-shadow: none; border-bottom: 2px solid var(--md-sys-color-primary); }
+        .prayer-table input[type="time"] { padding: 0.25rem 0.5rem; }
+        .combobox-dropdown {
+            position: absolute; z-index: 10; width: 100%;
+            background-color: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline);
+            border-radius: 0.5rem; margin-top: 0.25rem; max-height: 10rem; overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .combobox-option { padding: 0.5rem 1rem; cursor: pointer; }
+        .combobox-option:hover { background-color: var(--md-sys-color-primary-container); }
+        *:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 2px; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app-container" class="max-w-2xl mx-auto px-4">
+        
+        <header class="top-app-bar sticky top-0 z-10 w-full shadow-md py-3 px-4 flex items-center justify-between">
+            <h1 class="text-xl font-bold">एडमिन पैनल</h1>
+            <button id="logout-btn" class="hidden icon-btn bg-gray-200 text-gray-700" title="लॉगआउट">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2A.75.75 0 0010.75 3.5h-5.5A.75.75 0 004.5 4.25v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clip-rule="evenodd" /><path fill-rule="evenodd" d="M16.72 9.22a.75.75 0 011.06 0l2.25 2.25a.75.75 0 010 1.06l-2.25 2.25a.75.75 0 11-1.06-1.06L17.94 11H9.25a.75.75 0 010-1.5h8.69l-1.28-1.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+            </button>
+        </header>
+
+        <main class="pt-4 pb-20">
+            <div id="login-view">
+                <div class="card p-8 rounded-2xl mt-8">
+                    <h2 class="text-2xl font-bold text-center mb-6">लॉगिन करें</h2>
+                    <form id="login-form" class="space-y-4">
+                        <div>
+                            <label for="email" class="block mb-1 font-medium">ईमेल</label>
+                            <input type="email" id="email" class="form-input" required value="me@zaid.ovh">
+                        </div>
+                        <div>
+                            <label for="password" class="block mb-1 font-medium">पासवर्ड</label>
+                            <input type="password" id="password" class="form-input" required value="pass123">
+                        </div>
+                        <button type="submit" class="w-full btn-primary font-bold py-3 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center">
+                             <span>लॉगिन करें</span>
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2A.75.75 0 0010.75 3.5h-5.5A.75.75 0 004.5 4.25v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clip-rule="evenodd" /><path fill-rule="evenodd" d="M16.72 9.22a.75.75 0 011.06 0l2.25 2.25a.75.75 0 010 1.06l-2.25 2.25a.75.75 0 11-1.06-1.06L17.94 11H9.25a.75.75 0 010-1.5h8.69l-1.28-1.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
+                        </button>
+                        <p id="login-error" class="text-red-500 text-sm mt-2 text-center"></p>
+                    </form>
+                </div>
+            </div>
+
+            <div id="admin-dashboard" class="hidden">
+                <div class="flex justify-between items-center my-4">
+                    <h2 class="text-2xl font-bold">मस्जिद प्रबंधन</h2>
+                    <button id="add-mosque-btn" class="btn-primary icon-btn shadow-lg" title="नई मस्जिद जोड़ें">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>
+                    </button>
+                </div>
+                <div id="admin-mosque-list" class="space-y-3"></div>
+            </div>
+        </main>
+    </div>
+
+    <div id="mosque-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-[var(--md-sys-color-surface)] rounded-2xl shadow-xl w-full max-w-2xl max-h-full overflow-y-auto">
+            <form id="mosque-form" class="p-6">
+                <input type="hidden" id="mosque-id">
+                 <div class="mb-4">
+                    <input type="text" id="name" placeholder="मस्जिद का नाम..." class="form-input-special w-full" required>
+                    <div class="flex flex-wrap gap-2 mt-4">
+                         <div class="relative flex-grow">
+                             <input type="text" id="city" placeholder="शहर" class="form-input w-full" required autocomplete="off">
+                             <div id="city-dropdown" class="combobox-dropdown hidden"></div>
+                         </div>
+                         <div class="relative flex-grow">
+                             <input type="text" id="tag" placeholder="टैग" class="form-input w-full" autocomplete="off">
+                             <div id="tag-dropdown" class="combobox-dropdown hidden"></div>
+                         </div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="card p-4 rounded-xl">
+                        <h2 class="text-xl font-semibold mb-2">नमाज़ो के टाईम</h2>
+                        <div class="overflow-x-auto"><table class="w-full text-left prayer-table">
+                            <thead class="text-xs text-[var(--md-sys-color-on-surface-variant)] uppercase">
+                                <tr><th class="py-2 px-2">नमाज़</th><th class="py-2 px-2 text-center">अज़ान</th><th class="py-2 px-2 text-center">जमात</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-[var(--md-sys-color-outline)]"><td class="py-3 px-2 font-medium">फज्र</td><td class="py-3 px-2 text-center"><input type="time" id="fajr_azan" class="form-input"></td><td class="py-3 px-2 text-center"><input type="time" id="fajr_jamaat" class="form-input"></td></tr>
+                                <tr class="border-b border-[var(--md-sys-color-outline)]"><td class="py-3 px-2 font-medium">ज़ोहर</td><td class="py-3 px-2 text-center"><input type="time" id="zohar_azan" class="form-input"></td><td class="py-3 px-2 text-center"><input type="time" id="zohar_jamaat" class="form-input"></td></tr>
+                                <tr class="border-b border-[var(--md-sys-color-outline)]"><td class="py-3 px-2 font-medium">असर</td><td class="py-3 px-2 text-center"><input type="time" id="asr_azan" class="form-input"></td><td class="py-3 px-2 text-center"><input type="time" id="asr_jamaat" class="form-input"></td></tr>
+                                <tr class="border-b border-[var(--md-sys-color-outline)]"><td class="py-3 px-2 font-medium">मगरिब</td><td class="py-3 px-2 text-center"><input type="time" id="maghrib_azan" class="form-input"></td><td class="py-3 px-2 text-center"><input type="time" id="maghrib_jamaat" class="form-input"></td></tr>
+                                <tr class="border-b border-[var(--md-sys-color-outline)]"><td class="py-3 px-2 font-medium">ईशा</td><td class="py-3 px-2 text-center"><input type="time" id="isha_azan" class="form-input"></td><td class="py-3 px-2 text-center"><input type="time" id="isha_jamaat" class="form-input"></td></tr>
+                                <tr><td class="py-3 px-2 font-medium">जुमा</td><td class="py-3 px-2 text-center"><input type="time" id="juma_azan" class="form-input"></td><td class="py-3 px-2 text-center"><input type="time" id="juma_jamaat" class="form-input"></td></tr>
+                            </tbody>
+                        </table></div>
+                    </div>
+                     <div class="card p-4 rounded-xl">
+                        <h2 class="text-xl font-semibold mb-2">वेबसाइट</h2>
+                        <input type="url" id="location" placeholder="https://example.com" class="form-input">
+                    </div>
+                    <div class="card p-4 rounded-xl">
+                        <h2 class="text-xl font-semibold mb-2">टिप / घोषणा</h2>
+                         <textarea id="announcement" placeholder="यहां कोई भी घोषणा या टिप लिखें..." class="form-input min-h-[100px] w-full"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-6 mt-4 border-t border-[var(--md-sys-color-outline)]">
+                    <button type="button" id="cancel-btn" class="icon-btn bg-gray-200 text-gray-700" title="रद्द करें">
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>
+                    </button>
+                    <button type="submit" id="save-btn" class="btn-primary icon-btn" title="सेव करें">
+                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.052-.143z" clip-rule="evenodd" /></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const SUPABASE_URL = 'https://fbtncgsavafecrljjubv.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidG5jZ3NhdmFmZWNybGpqdWJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5Njg1ODUsImV4cCI6MjA3MjU0NDU4NX0.vzjeljFGpx276lksHWOOwtJTtvp1WYjbY7SANI3icqs';
+            
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const loginView = document.getElementById('login-view');
+            const adminDashboard = document.getElementById('admin-dashboard');
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const logoutBtn = document.getElementById('logout-btn');
+            const addMosqueBtn = document.getElementById('add-mosque-btn');
+            const mosqueModal = document.getElementById('mosque-modal');
+            const mosqueForm = document.getElementById('mosque-form');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const adminMosqueList = document.getElementById('admin-mosque-list');
+
+            let allMosquesAdmin = [];
+            let uniqueCities = [];
+            let uniqueTags = [];
+
+            if (loginForm) {
+                 loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    loginError.textContent = '';
+                    const { error } = await supabase.auth.signInWithPassword({ 
+                        email: document.getElementById('email').value, 
+                        password: document.getElementById('password').value 
+                    });
+                    if (error) loginError.textContent = 'अमान्य ईमेल या पासवर्ड।';
+                    checkUserSession();
+                });
+            }
+
+            logoutBtn.addEventListener('click', async () => {
+                await supabase.auth.signOut();
+                checkUserSession();
+            });
+
+            async function checkUserSession() {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    loginView.classList.add('hidden');
+                    adminDashboard.classList.remove('hidden');
+                    logoutBtn.classList.remove('hidden');
+                    await fetchAdminData();
+                    renderAdminList();
+                } else {
+                    loginView.classList.remove('hidden');
+                    adminDashboard.classList.add('hidden');
+                    logoutBtn.classList.add('hidden');
+                }
+            }
+
+            async function fetchAdminData() {
+                const { data, error } = await supabase.from('masjids').select('id, name, city, tag').order('id', { ascending: false });
+                if (error) return console.error('Error fetching admin data:', error);
+                allMosquesAdmin = data;
+                uniqueCities = [...new Set(data.map(m => m.city).filter(Boolean))].sort();
+                uniqueTags = [...new Set(data.map(m => m.tag).filter(Boolean))].sort();
+            }
+            
+            function renderAdminList() {
+                adminMosqueList.innerHTML = allMosquesAdmin.map(mosque => `
+                    <div class="card p-4 rounded-xl flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-lg">${mosque.name}</p>
+                            <p class="text-sm opacity-80">${mosque.city}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button data-id="${mosque.id}" class="edit-btn icon-btn bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]" title="संपादित करें">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" /></svg>
+                            </button>
+                            <button data-id="${mosque.id}" class="delete-btn icon-btn bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]" title="हटाएं">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.58.237-2.37.466A2.25 2.25 0 002.25 6.64v7.72a2.25 2.25 0 001.38 2.144c.822.242 1.69.418 2.62.518V18.75a.75.75 0 00.75.75h6a.75.75 0 00.75-.75v-1.728c.93-.1 1.798-.276 2.62-.518a2.25 2.25 0 001.38-2.144V6.64a2.25 2.25 0 00-1.38-2.143 61.45 61.45 0 00-2.37-.466v-.443A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.023 2.5.067v1.683c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V4.333C16.425 4.68 17.25 5.12 17.25 6.64v7.72c0 .93-.53 1.758-1.272 2.092-.78.358-1.6.59-2.478.748v.96a.75.75 0 01-.75.75h-4.5a.75.75 0 01-.75-.75v-.96c-.878-.158-1.698-.39-2.478-.748C4.28 16.118 3.75 15.29 3.75 14.36V6.64c0-1.52 1.018-1.96 1.94-2.266.78-.23 1.574-.39 2.31-.467V6c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V4.067C10.827 4.023 11.66 4 12.5 4h-2.5z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                    </div>`).join('');
+            }
+            
+            function setupCombobox(inputId, dropdownId, items) {
+                const input = document.getElementById(inputId);
+                const dropdown = document.getElementById(dropdownId);
+                const showDropdown = () => { populateDropdown(); dropdown.classList.remove('hidden'); };
+                const hideDropdown = () => setTimeout(() => dropdown.classList.add('hidden'), 150);
+                const populateDropdown = () => {
+                    const filter = input.value.toLowerCase();
+                    dropdown.innerHTML = items.filter(item => item.toLowerCase().includes(filter))
+                        .map(item => `<div class="combobox-option" data-value="${item}">${item}</div>`).join('');
+                };
+                input.addEventListener('focus', showDropdown);
+                input.addEventListener('blur', hideDropdown);
+                input.addEventListener('input', populateDropdown);
+                dropdown.addEventListener('mousedown', e => {
+                    if (e.target.classList.contains('combobox-option')) {
+                        input.value = e.target.dataset.value;
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            addMosqueBtn.addEventListener('click', () => {
+                mosqueForm.reset();
+                document.getElementById('mosque-id').value = '';
+                document.getElementById('name').value = '';
+                document.getElementById('city').value = 'सोलापूर';
+                document.getElementById('tag').value = '';
+                setupCombobox('city', 'city-dropdown', uniqueCities);
+                setupCombobox('tag', 'tag-dropdown', uniqueTags);
+                mosqueModal.classList.remove('hidden');
+                mosqueModal.classList.add('flex');
+            });
+            
+            adminMosqueList.addEventListener('click', async (e) => {
+                const button = e.target.closest('button');
+                if (!button) return;
+                const id = button.dataset.id;
+
+                if (button.classList.contains('edit-btn')) {
+                    const { data: mosqueToEdit, error } = await supabase.from('masjids').select('*').eq('id', id).single();
+                    if (error) return console.error("Could not fetch mosque details", error);
+                    
+                    document.getElementById('mosque-id').value = mosqueToEdit.id;
+                    document.getElementById('name').value = mosqueToEdit.name;
+                    document.getElementById('city').value = mosqueToEdit.city;
+                    document.getElementById('tag').value = mosqueToEdit.tag;
+                    document.getElementById('location').value = mosqueToEdit.location;
+                    document.getElementById('announcement').value = mosqueToEdit.announcement;
+                    ['fajr', 'zohar', 'asr', 'maghrib', 'isha', 'juma'].forEach(p => {
+                        document.getElementById(`${p}_azan`).value = mosqueToEdit[`${p}_azan`];
+                        document.getElementById(`${p}_jamaat`).value = mosqueToEdit[`${p}_jamaat`];
+                    });
+                    
+                    setupCombobox('city', 'city-dropdown', uniqueCities);
+                    setupCombobox('tag', 'tag-dropdown', uniqueTags);
+                    mosqueModal.classList.remove('hidden');
+                    mosqueModal.classList.add('flex');
+                }
+
+                if (button.classList.contains('delete-btn')) {
+                    if (confirm('क्या आप वाकई इस मस्जिद को हटाना चाहते हैं?')) {
+                        deleteMosque(id);
+                    }
+                }
+            });
+
+            async function deleteMosque(id) {
+                const { error } = await supabase.from('masjids').delete().eq('id', id);
+                if (error) alert('त्रुटि: मस्जिद को हटाया नहीं जा सका।');
+                else {
+                    await fetchAdminData();
+                    renderAdminList();
+                }
+            }
+
+            mosqueForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('mosque-id').value;
+                const mosqueData = {
+                    name: document.getElementById('name').value, city: document.getElementById('city').value,
+                    tag: document.getElementById('tag').value, location: document.getElementById('location').value,
+                    announcement: document.getElementById('announcement').value,
+                    fajr_azan: document.getElementById('fajr_azan').value || null, fajr_jamaat: document.getElementById('fajr_jamaat').value || null,
+                    zohar_azan: document.getElementById('zohar_azan').value || null, zohar_jamaat: document.getElementById('zohar_jamaat').value || null,
+                    asr_azan: document.getElementById('asr_azan').value || null, asr_jamaat: document.getElementById('asr_jamaat').value || null,
+                    maghrib_azan: document.getElementById('maghrib_azan').value || null, maghrib_jamaat: document.getElementById('maghrib_jamaat').value || null,
+                    isha_azan: document.getElementById('isha_azan').value || null, isha_jamaat: document.getElementById('isha_jamaat').value || null,
+                    juma_azan: document.getElementById('juma_azan').value || null, juma_jamaat: document.getElementById('juma_jamaat').value || null,
+                };
+                
+                const { error } = id 
+                    ? await supabase.from('masjids').update(mosqueData).eq('id', id)
+                    : await supabase.from('masjids').insert([mosqueData]);
+
+                if (error) {
+                    alert('त्रुटि: मस्जिद को सेव नहीं किया जा सका।');
+                    console.error(error);
+                } else {
+                    mosqueModal.classList.add('hidden');
+                    await fetchAdminData();
+                    renderAdminList();
+                }
+            });
+
+            cancelBtn.addEventListener('click', () => mosqueModal.classList.add('hidden'));
+
+            checkUserSession();
+        });
+    </script>
+</body>
+</html>
+
