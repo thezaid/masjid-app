@@ -9,9 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
-    <!-- Theme Color for Browser UI -->
     <meta name="theme-color" content="#FFFBFE">
 
     <style>
@@ -33,107 +31,120 @@
             --md-sys-color-on-surface-variant: #49454F;
             --md-sys-color-outline: #79747E;
         }
+        html { scroll-behavior: smooth; }
         body { font-family: 'Noto Serif Devanagari', sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-background); }
+        body.modal-open { overflow: hidden; }
         .top-app-bar { background-color: var(--md-sys-color-surface); }
         .card { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
         .chip { background-color: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
         .btn-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-        /* Simple focus visibility for accessibility */
         *:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 2px; border-radius: 4px; }
         .search-container input:focus { outline: none; box-shadow: none; }
+        .prayer-table tr:not(:first-child) { border-top: 1px solid rgba(121, 116, 126, 0.2); }
+        .nav-drawer {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .nav-drawer.open {
+            transform: translateX(0);
+        }
+        .nav-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s;
+        }
+        .nav-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .filter-chip.active {
+             background-color: var(--md-sys-color-primary-container);
+             color: var(--md-sys-color-on-primary-container);
+             border-color: var(--md-sys-color-primary-container);
+        }
     </style>
 </head>
 <body class="antialiased">
 
+    <!-- Nav Drawer -->
+    <div id="nav-overlay" class="nav-overlay fixed inset-0 bg-black bg-opacity-50 z-30"></div>
+    <aside id="nav-drawer" class="nav-drawer fixed top-0 left-0 h-full w-64 bg-[var(--md-sys-color-surface)] shadow-lg z-40 p-4">
+        <h2 class="text-lg font-medium mb-4">मेनू</h2>
+        <ul>
+            <li>
+                <a href="admin.html" class="flex items-center p-2 rounded-lg hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3 text-gray-700"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 12h9.75M10.5 18h9.75M3.75 6.75h1.5v1.5h-1.5v-1.5zm0 5.25h1.5v1.5h-1.5v-1.5zm0 5.25h1.5v1.5h-1.5v-1.5z" /></svg>
+                    एडमिन पैनल
+                </a>
+            </li>
+        </ul>
+    </aside>
+
     <div id="app-container" class="max-w-2xl mx-auto px-4">
-        <!-- Main page content -->
         <div id="main-page">
-            <header class="top-app-bar sticky top-0 z-10 w-full shadow-md py-3 px-4 flex items-center justify-between gap-2">
-                <h1 class="text-xl font-bold">मस्जिदों के टाईम</h1>
-                <div class="flex items-center gap-2">
-                    <a href="admin.html" class="p-2 rounded-full hover:bg-gray-200" title="Admin Panel">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-gray-600">
-                           <path fill-rule="evenodd" d="M18 8a6 6 0 11-12 0 6 6 0 0112 0zM7 8a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 017 8zM12.25 8.75a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5z" clip-rule="evenodd" />
-                           <path d="M.46 9.049a.75.75 0 01.998-.063 8.49 8.49 0 001.896.755.75.75 0 01-.393 1.454 9.99 9.99 0 01-2.228-.88.75.75 0 01-.273-1.266zM17.728 8.734a.75.75 0 01.273 1.266 9.99 9.99 0 01-2.228.88.75.75 0 11-.393-1.454 8.49 8.49 0 001.896-.755.75.75 0 01.452-.063z" />
-                           <path fill-rule="evenodd" d="M10 2a.75.75 0 01.67.41l.223.445.223.445a.75.75 0 01-1.342.67L10 3.527 9.223 5.08a.75.75 0 01-1.342-.67l.223-.445L8.33 3.527a.75.75 0 011.26-.587l.187.374.187.374A.75.75 0 0110 4.09V2zM8.5 14.25a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-                        </svg>
-                    </a>
-                </div>
+            <header class="top-app-bar sticky top-0 z-20 w-full shadow-md py-4 px-6 flex items-center justify-between gap-2">
+                <button id="hamburger-btn" class="p-2 rounded-full hover:bg-gray-200 -ml-2" title="मेनू">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                </button>
+                <h1 class="text-xl">मस्जिदों के टाईम</h1>
+                <div class="w-10"></div> <!-- Spacer -->
             </header>
 
             <main class="py-4">
-                <div class="search-container sticky top-[70px] z-10 mb-4 p-1 bg-[var(--md-sys-color-surface-variant)] rounded-full flex items-center shadow">
+                <div class="search-container sticky top-[84px] z-10 mb-2 p-1 bg-[var(--md-sys-color-surface-variant)] rounded-full flex items-center shadow">
                     <div class="p-2 text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                     </div>
                     <input type="text" id="search-input" placeholder="मस्जिद, शहर, या टैग खोजें..." class="w-full bg-transparent focus:outline-none pr-3">
-                    <button id="filter-btn" class="p-2 rounded-full hover:bg-gray-300 mr-1" title="Filter">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 01.628.74v2.288a2.25 2.25 0 01-.659 1.59l-4.682 4.683a2.25 2.25 0 00-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 018 18.25v-5.757a2.25 2.25 0 00-.659-1.59L2.659 6.22A2.25 2.25 0 012 4.629V2.34a.75.75 0 01.628-.74z" /></svg>
+                    <button id="filter-btn" class="p-2 rounded-full hover:bg-gray-300 mr-1" title="फ़िल्टर">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.572a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" /></svg>
                     </button>
                 </div>
-                <div id="mosque-list" class="space-y-3">
-                    <!-- Mosque cards will be inserted here -->
-                </div>
+                 <div id="active-filters-container" class="mb-4 hidden px-2"></div>
+                <div id="mosque-list" class="space-y-3"></div>
                 <div id="no-results" class="text-center py-10 hidden">
                     <p>कोई परिणाम नहीं मिला।</p>
                 </div>
             </main>
         </div>
 
-        <!-- Detail page content (initially hidden) -->
-        <div id="detail-page" class="hidden">
-            <!-- Content will be injected here -->
-        </div>
-
+        <div id="detail-page" class="hidden"></div>
     </div>
 
-    <!-- Filter Modal -->
-    <div id="filter-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+    <div id="filter-modal" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden items-center justify-center p-4">
         <div class="card w-full max-w-md rounded-2xl shadow-xl p-6">
-            <h2 class="text-xl font-bold mb-4">फ़िल्टर करें</h2>
+            <h2 class="text-xl mb-4">फ़िल्टर करें</h2>
             <div class="space-y-4">
                 <div>
-                    <h3 class="font-semibold mb-2">शहर के अनुसार</h3>
+                    <h3 class="font-medium mb-2">शहर के अनुसार</h3>
                     <div id="city-filters" class="flex flex-wrap gap-2"></div>
                 </div>
                 <div>
-                    <h3 class="font-semibold mb-2">टैग के अनुसार</h3>
+                    <h3 class="font-medium mb-2">टैग के अनुसार</h3>
                     <div id="tag-filters" class="flex flex-wrap gap-2"></div>
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-6">
-                <button id="clear-filters-btn" class="px-4 py-2 rounded-full font-semibold">साफ़ करें</button>
-                <button id="apply-filters-btn" class="btn-primary px-4 py-2 rounded-full font-semibold">लागू करें</button>
+                <button id="clear-filters-btn" class="px-4 py-2 rounded-full">साफ़ करें</button>
+                <button id="apply-filters-btn" class="btn-primary px-4 py-2 rounded-full">लागू करें</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('ServiceWorker registration failed: ', error);
-                    });
+                navigator.serviceWorker.register('/service-worker.js').catch(err => console.log('Service worker registration failed: ', err));
             });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Your Supabase credentials
             const SUPABASE_URL = 'https://fbtncgsavafecrljjubv.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidG5jZ3NhdmFmZWNybGpqdWJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5Njg1ODUsImV4cCI6MjA3MjU0NDU4NX0.vzjeljFGpx276lksHWOOwtJTtvp1WYjbY7SANI3icqs';
-            
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             
-            let allMosques = [];
-            let uniqueCities = [];
-            let uniqueTags = [];
-            let activeCityFilters = new Set();
-            let activeTagFilters = new Set();
+            let allMosques = [], uniqueCities = [], uniqueTags = [];
+            let activeCityFilters = new Set(), activeTagFilters = new Set();
 
             const mainPage = document.getElementById('main-page');
             const detailPage = document.getElementById('detail-page');
@@ -146,27 +157,27 @@
             const tagFiltersContainer = document.getElementById('tag-filters');
             const clearFiltersBtn = document.getElementById('clear-filters-btn');
             const applyFiltersBtn = document.getElementById('apply-filters-btn');
-            
-            // Time formatting function
+            const activeFiltersContainer = document.getElementById('active-filters-container');
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const navDrawer = document.getElementById('nav-drawer');
+            const navOverlay = document.getElementById('nav-overlay');
+
             function formatLastUpdated(dateString) {
                 if (!dateString) return '';
                 const date = new Date(dateString);
                 const now = new Date();
                 const diffSeconds = Math.round((now - date) / 1000);
+                if (diffSeconds < 60) return `अभी`;
                 const diffMinutes = Math.round(diffSeconds / 60);
-                const diffHours = Math.round(diffMinutes / 60);
-                const diffDays = Math.round(diffHours / 24);
-                
-                if (diffSeconds < 60) return `${diffSeconds} सेकंड पहले`;
                 if (diffMinutes < 60) return `${diffMinutes} मिनट पहले`;
+                const diffHours = Math.round(diffMinutes / 60);
                 if (diffHours < 24) return `${diffHours} घंटे पहले`;
+                const diffDays = Math.round(diffHours / 24);
                 if (diffDays <= 7) return `${diffDays} दिन पहले`;
-
                 return new Intl.DateTimeFormat('en-IN', {
                     day: 'numeric', month: 'short',
                     hour: 'numeric', minute: '2-digit',
-                    hour12: true,
-                    timeZone: 'Asia/Kolkata'
+                    hour12: true, timeZone: 'Asia/Kolkata'
                 }).format(date);
             }
 
@@ -175,7 +186,7 @@
                 const [hours, minutes] = timeString.split(':');
                 const date = new Date();
                 date.setHours(hours, minutes, 0);
-                return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
             }
 
             function renderMosqueList(mosques) {
@@ -183,10 +194,10 @@
                     <div class="card p-4 rounded-xl shadow cursor-pointer transition-transform transform hover:scale-105" data-id="${mosque.id}">
                          <div class="flex justify-between items-start">
                              <div>
-                                 <h2 class="text-lg font-bold">${mosque.name}</h2>
+                                 <h2 class="text-lg">${mosque.name}</h2>
                                  <p class="text-sm opacity-80">${mosque.city}</p>
                              </div>
-                             <p class="text-xs opacity-70 text-right whitespace-nowrap">${formatLastUpdated(mosque.last_updated)}</p>
+                             <p class="text-sm opacity-70 text-right whitespace-nowrap">${formatLastUpdated(mosque.last_updated)}</p>
                          </div>
                     </div>
                 `).join('');
@@ -202,10 +213,10 @@
                         (mosque.tag && mosque.tag.toLowerCase().includes(searchTerm));
                     const matchesCity = activeCityFilters.size === 0 || activeCityFilters.has(mosque.city);
                     const matchesTag = activeTagFilters.size === 0 || activeTagFilters.has(mosque.tag);
-
                     return matchesSearch && matchesCity && matchesTag;
                 });
                 renderMosqueList(filtered);
+                renderActiveFilters();
             }
 
             function showDetailPage(mosque) {
@@ -220,35 +231,37 @@
                 ];
                 
                 detailPage.innerHTML = `
-                    <header class="top-app-bar sticky top-0 z-10 w-full shadow-md py-3 px-4 flex items-center gap-2">
-                        <button id="back-btn" class="p-2 rounded-full hover:bg-gray-200">
-                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clip-rule="evenodd" /></svg>
+                    <header class="top-app-bar sticky top-0 z-10 w-full shadow-md py-4 px-6 flex items-center gap-2">
+                        <button id="back-btn" class="p-2 rounded-full hover:bg-gray-200 -ml-2">
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
                         </button>
-                        <h1 class="text-xl font-bold truncate">${mosque.name}</h1>
+                        <h1 class="text-xl truncate">${mosque.name}</h1>
                     </header>
                     <main class="py-4 space-y-6">
-                        <div class="px-4">
-                           <p class="text-xs text-right opacity-70 mb-2">${formatLastUpdated(mosque.last_updated)}</p>
-                           <h1 class="text-2xl font-bold mb-2">${mosque.name}</h1>
+                        <div class="px-4 pt-4">
+                           <h1 class="text-2xl mb-2">${mosque.name}</h1>
                            <div class="flex flex-wrap gap-2 text-sm">
-                               <span class="chip font-semibold py-1 px-3 rounded-full">${mosque.city}</span>
-                               ${mosque.tag ? `<span class="chip font-semibold py-1 px-3 rounded-full">${mosque.tag}</span>` : ''}
+                               <span class="chip font-medium py-1 px-3 rounded-full">${mosque.city}</span>
+                               ${mosque.tag ? `<span class="chip font-medium py-1 px-3 rounded-full">${mosque.tag}</span>` : ''}
                            </div>
                         </div>
 
                         <div class="card p-4 rounded-xl">
-                            <h2 class="text-xl font-semibold mb-2">नमाज़ो के टाईम</h2>
+                            <div class="flex justify-between items-center mb-2">
+                               <h2 class="text-xl font-medium">नमाज़ो के टाईम</h2>
+                               <p class="text-sm opacity-70">${formatLastUpdated(mosque.last_updated)}</p>
+                            </div>
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left">
+                                <table class="w-full text-left prayer-table">
                                     <thead class="text-xs text-[var(--md-sys-color-on-surface-variant)] uppercase">
-                                        <tr><th class="py-2 px-2">नमाज़</th><th class="py-2 px-2 text-center">अज़ान</th><th class="py-2 px-2 text-center">जमात</th></tr>
+                                        <tr><th class="py-2 px-2 font-medium">नमाज़</th><th class="py-2 px-2 text-center font-medium">अज़ान</th><th class="py-2 px-2 text-center font-medium">जमात</th></tr>
                                     </thead>
                                     <tbody>
                                         ${prayers.filter(p => p.azan || p.jamaat).map(p => `
-                                            <tr class="border-t border-[var(--md-sys-color-outline)]">
+                                            <tr>
                                                 <td class="py-3 px-2 font-medium">${p.name}</td>
-                                                <td class="py-3 px-2 text-center font-mono">${formatTime(p.azan)}</td>
-                                                <td class="py-3 px-2 text-center font-mono">${formatTime(p.jamaat)}</td>
+                                                <td class="py-3 px-2 text-center">${formatTime(p.azan)}</td>
+                                                <td class="py-3 px-2 text-center">${formatTime(p.jamaat)}</td>
                                             </tr>
                                         `).join('')}
                                     </tbody>
@@ -256,19 +269,8 @@
                             </div>
                         </div>
 
-                        ${mosque.location ? `
-                        <div class="card p-4 rounded-xl">
-                            <h2 class="text-xl font-semibold mb-2">वेबसाइट</h2>
-                            <a href="${mosque.location}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-block w-full text-center font-bold py-3 px-4 rounded-full transition-transform transform hover:scale-105">वेबसाइट देखें</a>
-                        </div>
-                        ` : ''}
-                        
-                        ${mosque.announcement ? `
-                        <div class="card p-4 rounded-xl">
-                            <h2 class="text-xl font-semibold mb-2">टिप / घोषणा</h2>
-                            <p>${mosque.announcement}</p>
-                        </div>
-                        ` : ''}
+                        ${mosque.location ? `<div class="card p-4 rounded-xl"><h2 class="text-xl font-medium mb-2">वेबसाइट</h2><a href="${mosque.location}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-block w-full text-center font-medium py-3 px-4 rounded-full transition-transform transform hover:scale-105">वेबसाइट देखें</a></div>` : ''}
+                        ${mosque.announcement ? `<div class="card p-4 rounded-xl"><h2 class="text-xl font-medium mb-2">टिप / घोषणा</h2><p>${mosque.announcement}</p></div>` : ''}
                     </main>
                 `;
                 detailPage.classList.remove('hidden');
@@ -277,44 +279,68 @@
                     mainPage.classList.remove('hidden');
                 });
             }
-
-            function setupFilterModal() {
-                cityFiltersContainer.innerHTML = uniqueCities.map(city => `
-                    <button data-value="${city}" class="filter-chip px-3 py-1 rounded-full border border-gray-400 data-[active=true]:bg-[var(--md-sys-color-primary-container)] data-[active=true]:border-[var(--md-sys-color-primary)]">${city}</button>
-                `).join('');
-                
-                tagFiltersContainer.innerHTML = uniqueTags.map(tag => `
-                    <button data-value="${tag}" class="filter-chip px-3 py-1 rounded-full border border-gray-400 data-[active=true]:bg-[var(--md-sys-color-primary-container)] data-[active=true]:border-[var(--md-sys-color-primary)]">${tag}</button>
-                `).join('');
-
-                cityFiltersContainer.querySelectorAll('.filter-chip').forEach(btn => btn.addEventListener('click', () => {
-                    const isActive = btn.dataset.active === 'true';
-                    btn.dataset.active = !isActive;
-                    if (!isActive) activeCityFilters.add(btn.dataset.value);
-                    else activeCityFilters.delete(btn.dataset.value);
-                }));
-                tagFiltersContainer.querySelectorAll('.filter-chip').forEach(btn => btn.addEventListener('click', () => {
-                    const isActive = btn.dataset.active === 'true';
-                    btn.dataset.active = !isActive;
-                    if (!isActive) activeTagFilters.add(btn.dataset.value);
-                    else activeTagFilters.delete(btn.dataset.value);
-                }));
-            }
             
-            async function initializeApp() {
-                const { data, error } = await supabase.from('masjids').select('*').order('name');
-                if (error) {
-                    console.error('Error fetching data:', error);
+            function openFilterModal() {
+                cityFiltersContainer.innerHTML = uniqueCities.map(city => `<button data-value="${city}" class="filter-chip px-3 py-1 rounded-full border border-gray-400 ${activeCityFilters.has(city) ? 'active' : ''}">${city}</button>`).join('');
+                tagFiltersContainer.innerHTML = uniqueTags.map(tag => `<button data-value="${tag}" class="filter-chip px-3 py-1 rounded-full border border-gray-400 ${activeTagFilters.has(tag) ? 'active' : ''}">${tag}</button>`).join('');
+                
+                filterModal.querySelectorAll('.filter-chip').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        btn.classList.toggle('active');
+                    });
+                });
+                
+                filterModal.classList.remove('hidden');
+                document.body.classList.add('modal-open');
+                mainPage.style.pointerEvents = 'none';
+            }
+
+            function closeFilterModal() {
+                filterModal.classList.add('hidden');
+                document.body.classList.remove('modal-open');
+                mainPage.style.pointerEvents = 'auto';
+            }
+
+            function renderActiveFilters() {
+                const allFilters = [...activeCityFilters, ...activeTagFilters];
+                if (allFilters.length === 0) {
+                    activeFiltersContainer.classList.add('hidden');
                     return;
                 }
+                activeFiltersContainer.classList.remove('hidden');
+                activeFiltersContainer.innerHTML = `
+                    <div class="flex flex-wrap items-center gap-2">
+                        ${allFilters.map(filter => `
+                            <span class="chip text-xs font-medium py-1 px-3 rounded-full flex items-center gap-1">
+                                ${filter}
+                                <button data-filter-value="${filter}" class="remove-filter-btn ml-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </span>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            activeFiltersContainer.addEventListener('click', (e) => {
+                const removeBtn = e.target.closest('.remove-filter-btn');
+                if (removeBtn) {
+                    const value = removeBtn.dataset.filterValue;
+                    activeCityFilters.delete(value);
+                    activeTagFilters.delete(value);
+                    filterAndRender();
+                }
+            });
+
+            async function initializeApp() {
+                const { data, error } = await supabase.from('masjids').select('*').order('name');
+                if (error) { return console.error('Error fetching data:', error); }
                 allMosques = data;
                 uniqueCities = [...new Set(data.map(m => m.city).filter(Boolean))].sort();
                 uniqueTags = [...new Set(data.map(m => m.tag).filter(Boolean))].sort();
                 renderMosqueList(allMosques);
-                setupFilterModal();
             }
 
-            // Event Listeners
             searchInput.addEventListener('input', filterAndRender);
             mosqueList.addEventListener('click', (e) => {
                 const card = e.target.closest('.card');
@@ -325,26 +351,33 @@
                 }
             });
 
-            filterBtn.addEventListener('click', () => filterModal.classList.remove('hidden'));
-            filterModal.addEventListener('click', (e) => {
-                if (e.target === filterModal) filterModal.classList.add('hidden');
-            });
-            clearFiltersBtn.addEventListener('click', () => {
-                activeCityFilters.clear();
-                activeTagFilters.clear();
-                filterModal.querySelectorAll('.filter-chip').forEach(btn => btn.dataset.active = false);
-            });
+            filterBtn.addEventListener('click', openFilterModal);
+            filterModal.addEventListener('click', (e) => { if (e.target === filterModal) closeFilterModal(); });
+            
             applyFiltersBtn.addEventListener('click', () => {
+                activeCityFilters.clear();
+                cityFiltersContainer.querySelectorAll('.filter-chip.active').forEach(btn => activeCityFilters.add(btn.dataset.value));
+                activeTagFilters.clear();
+                tagFiltersContainer.querySelectorAll('.filter-chip.active').forEach(btn => activeTagFilters.add(btn.dataset.value));
                 filterAndRender();
-                filterModal.classList.add('hidden');
+                closeFilterModal();
+            });
+
+            clearFiltersBtn.addEventListener('click', () => {
+                filterModal.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
+            });
+
+            hamburgerBtn.addEventListener('click', () => {
+                navDrawer.classList.toggle('open');
+                navOverlay.classList.toggle('open');
+            });
+            navOverlay.addEventListener('click', () => {
+                navDrawer.classList.remove('open');
+                navOverlay.classList.remove('open');
             });
             
-            // Real-time listener
-            const channel = supabase.channel('public:masjids')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'masjids' }, payload => {
-                    console.log('Change received!', payload);
-                    initializeApp(); // Re-fetch all data on any change
-                })
+            supabase.channel('public:masjids')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'masjids' }, () => initializeApp())
                 .subscribe();
 
             initializeApp();
