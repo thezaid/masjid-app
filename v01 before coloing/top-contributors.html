@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>टॉप कंट्रीब्यूटर्स</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;500;700&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --md-sys-color-primary: #6750A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
+            --md-sys-color-on-primary-container: #21005D;
+            --md-sys-color-secondary: #625B71;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #E8DEF8;
+            --md-sys-color-on-secondary-container: #1D192B;
+            --md-sys-color-background: #FFFBFE;
+            --md-sys-color-on-background: #1C1B1F;
+            --md-sys-color-surface: #FFFBFE;
+            --md-sys-color-on-surface: #1C1B1F;
+            --md-sys-color-surface-variant: #E7E0EC;
+            --md-sys-color-on-surface-variant: #49454F;
+            --md-sys-color-outline: #79747E;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Noto Serif Devanagari', sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-background); }
+        .top-app-bar { background-color: var(--md-sys-color-surface); }
+        .card { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
+        *:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 2px; border-radius: 4px; }
+        .skeleton {
+            background-color: rgba(121, 116, 126, 0.2);
+            border-radius: 0.25rem;
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="app-container" class="max-w-2xl mx-auto px-4">
+        
+        <header class="top-app-bar sticky top-0 z-10 w-full shadow-md py-4 px-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                 <a href="/index.html" class="p-2 rounded-full hover:bg-gray-200 -ml-2" title="मुख्य पृष्ठ">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+                </a>
+                <h1 class="text-xl font-medium">टॉप कंट्रीब्यूटर्स</h1>
+            </div>
+             <a href="/admin.html" class="p-2 rounded-full hover:bg-gray-200" title="एडमिन पैनल">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
+            </a>
+        </header>
+
+        <main class="pt-4 pb-20 space-y-6">
+            <div class="card p-4 rounded-xl">
+                <h2 class="text-xl font-medium mb-3 px-2">आज</h2>
+                <div id="today-leaderboard"></div>
+            </div>
+             <div class="card p-4 rounded-xl">
+                <h2 class="text-xl font-medium mb-3 px-2">पिछले 3 दिन</h2>
+                <div id="past-3-days-leaderboard"></div>
+            </div>
+             <div class="card p-4 rounded-xl">
+                <h2 class="text-xl font-medium mb-3 px-2">इस हफ्ते</h2>
+                <div id="this-week-leaderboard"></div>
+            </div>
+             <div class="card p-4 rounded-xl">
+                <h2 class="text-xl font-medium mb-3 px-2">इस महीने</h2>
+                <div id="this-month-leaderboard"></div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const SUPABASE_URL = 'https://fbtncgsavafecrljjubv.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidG5jZ3NhdmFmZWNybGpqdWJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5Njg1ODUsImV4cCI6MjA3MjU0NDU4NX0.vzjeljFGpx276lksHWOOwtJTtvp1WYjbY7SANI3icqs';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const TOP_N_USERS = 5; 
+
+            function renderSkeleton(containerId) {
+                const container = document.getElementById(containerId);
+                let skeletonHTML = '<div class="space-y-3 px-4">';
+                for(let i=0; i < 3; i++) {
+                    skeletonHTML += '<div class="h-6 w-full skeleton"></div>';
+                }
+                skeletonHTML += '</div>';
+                container.innerHTML = skeletonHTML;
+            }
+
+            async function fetchLeaderboard(period) {
+                const { data, error } = await supabase.rpc('get_leaderboard', {
+                    time_period: period,
+                    top_n: TOP_N_USERS
+                });
+                if (error) {
+                    console.error(`Error fetching ${period} leaderboard:`, error);
+                    return null;
+                }
+                return data;
+            }
+
+            function renderLeaderboard(containerId, data) {
+                const container = document.getElementById(containerId);
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p class="text-sm opacity-70 px-4">इस अवधि में कोई अपडेट नहीं।</p>';
+                    return;
+                }
+                container.innerHTML = `
+                    <ol class="list-decimal list-inside space-y-2 px-4">
+                        ${data.map(user => `
+                            <li class="flex justify-between items-center">
+                                <span>${user.nickname || 'Unknown User'}</span>
+                                <span class="font-medium text-sm">${user.update_count} अपडेट</span>
+                            </li>
+                        `).join('')}
+                    </ol>
+                `;
+            }
+
+            async function loadAllLeaderboards() {
+                const periods = [
+                    { id: 'today-leaderboard', period: '1 day' },
+                    { id: 'past-3-days-leaderboard', period: '3 days' },
+                    { id: 'this-week-leaderboard', period: '1 week' },
+                    { id: 'this-month-leaderboard', period: '1 month' }
+                ];
+
+                periods.forEach(p => renderSkeleton(p.id));
+
+                const results = await Promise.all(periods.map(p => fetchLeaderboard(p.period)));
+
+                results.forEach((data, index) => {
+                    renderLeaderboard(periods[index].id, data);
+                });
+            }
+
+            loadAllLeaderboards();
+        });
+    </script>
+</body>
+</html>

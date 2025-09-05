@@ -1,13 +1,21 @@
-const CACHE_NAME = 'masjid-times-cache-v1';
+// Define a name for the current cache
+const CACHE_NAME = 'masjid-times-cache-v3';
+
+// List the files to be cached
 const urlsToCache = [
   '/',
   '/index.html',
   '/admin.html',
-  '/manifest.json'
-  // You can add more critical assets here, like your main font file if you want faster initial load.
+  '/signup.html',
+  '/info.html',
+  '/top-contributors.html',
+  '/suggest.html',
+  'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap',
+  'https://cdn.tailwindcss.com',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
 ];
 
-// Install the service worker and cache the essential app assets
+// Install the service worker and cache the files
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -18,12 +26,11 @@ self.addEventListener('install', event => {
   );
 });
 
-// Serve cached assets when offline, or fetch from the network
+// Fetch event listener
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Cache hit - return response
         if (response) {
           return response;
         }
@@ -33,7 +40,7 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Update the cache when a new service worker is activated
+// Activate event listener to clean up old caches
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(

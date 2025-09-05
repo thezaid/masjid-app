@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>सुझाव दें</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;500;700&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --md-sys-color-primary: #6750A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
+            --md-sys-color-on-primary-container: #21005D;
+            --md-sys-color-background: #FFFBFE;
+            --md-sys-color-on-background: #1C1B1F;
+            --md-sys-color-surface: #FFFBFE;
+            --md-sys-color-on-surface: #1C1B1F;
+            --md-sys-color-surface-variant: #E7E0EC;
+            --md-sys-color-on-surface-variant: #49454F;
+            --md-sys-color-outline: #79747E;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Noto Serif Devanagari', sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-background); }
+        .top-app-bar { background-color: var(--md-sys-color-surface); }
+        .card { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
+        .btn-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        .form-input {
+            background-color: rgba(234, 221, 255, 0.3);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px var(--md-sys-color-primary-container);
+        }
+         *:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 2px; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app-container" class="max-w-2xl mx-auto px-4">
+        <header class="top-app-bar sticky top-0 z-10 w-full shadow-md py-4 px-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <a href="/index.html" class="p-2 rounded-full hover:bg-gray-200 -ml-2" title="वापस">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+                </a>
+                <h1 class="text-xl font-medium">सुझाव दें</h1>
+            </div>
+        </header>
+
+        <main class="pt-4 pb-20">
+            <div id="suggestion-view">
+                <div class="card p-8 rounded-2xl mt-4">
+                    <form id="suggestion-form" class="space-y-4">
+                        <div>
+                            <label for="suggestion-masjid" class="block mb-1 font-medium">मस्जिद</label>
+                            <select id="suggestion-masjid" class="form-input" required>
+                                <option value="">मस्जिद चुनें...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="suggestion-prayer" class="block mb-1 font-medium">नमाज़</label>
+                            <select id="suggestion-prayer" class="form-input" required>
+                                <option value="fajr">फज्र</option>
+                                <option value="zohar">ज़ोहर</option>
+                                <option value="asr">असर</option>
+                                <option value="maghrib">मगरिब</option>
+                                <option value="isha">ईशा</option>
+                                <option value="juma">जुमा</option>
+                            </select>
+                        </div>
+                         <div>
+                            <label for="suggestion-azan" class="block mb-1 font-medium">अज़ान का समय</label>
+                            <input type="time" id="suggestion-azan" class="form-input">
+                        </div>
+                        <div>
+                            <label for="suggestion-jamaat" class="block mb-1 font-medium">जमात का समय</label>
+                            <input type="time" id="suggestion-jamaat" class="form-input">
+                        </div>
+                         <div>
+                            <label for="suggestion-notes" class="block mb-1 font-medium">टिप्पणी / नोट (वैकल्पिक)</label>
+                            <textarea id="suggestion-notes" class="form-input" placeholder="उदा. इमाम साहब ने घोषणा की..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full btn-primary font-medium py-3 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center">
+                             <span>सुझाव भेजें</span>
+                        </button>
+                    </form>
+                </div>
+                 <p id="message-area" class="text-center mt-4 text-sm"></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const SUPABASE_URL = 'https://fbtncgsavafecrljjubv.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidG5jZ3NhdmFmZWNybGpqdWJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5Njg1ODUsImV4cCI6MjA3MjU0NDU4NX0.vzjeljFGpx276lksHWOOwtJTtvp1WYjbY7SANI3icqs';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            const suggestionForm = document.getElementById('suggestion-form');
+            const masjidSelect = document.getElementById('suggestion-masjid');
+            const messageArea = document.getElementById('message-area');
+
+            async function loadMosques() {
+                const { data, error } = await supabase.from('masjids').select('id, name').order('name');
+                if (error) {
+                    console.error('Error fetching mosques:', error);
+                    return;
+                }
+                masjidSelect.innerHTML += data.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+            }
+            
+            suggestionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                messageArea.textContent = '';
+                messageArea.classList.remove('text-red-500', 'text-green-500');
+
+                const suggestion = {
+                    masjid_id: document.getElementById('suggestion-masjid').value,
+                    prayer_name: document.getElementById('suggestion-prayer').value,
+                    azan_time: document.getElementById('suggestion-azan').value || null,
+                    jamaat_time: document.getElementById('suggestion-jamaat').value || null,
+                    notes: document.getElementById('suggestion-notes').value || null
+                };
+
+                if (!suggestion.azan_time && !suggestion.jamaat_time) {
+                    messageArea.textContent = 'कृपया कम से कम एक समय प्रदान करें।';
+                    messageArea.classList.add('text-red-500');
+                    return;
+                }
+
+                const { error } = await supabase.from('suggestions').insert([suggestion]);
+
+                if (error) {
+                    messageArea.textContent = 'सुझाव भेजने में विफल: ' + error.message;
+                    messageArea.classList.add('text-red-500');
+                } else {
+                    messageArea.textContent = 'आपका सुझाव सफलतापूर्वक भेज दिया गया है!';
+                    messageArea.classList.add('text-green-500');
+                    suggestionForm.reset();
+                }
+            });
+
+            loadMosques();
+        });
+    </script>
+</body>
+</html>

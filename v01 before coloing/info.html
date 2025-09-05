@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>जानकारी</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;500;700&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --md-sys-color-primary: #6750A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
+            --md-sys-color-on-primary-container: #21005D;
+            --md-sys-color-secondary: #625B71;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #E8DEF8;
+            --md-sys-color-on-secondary-container: #1D192B;
+            --md-sys-color-background: #FFFBFE;
+            --md-sys-color-on-background: #1C1B1F;
+            --md-sys-color-surface: #FFFBFE;
+            --md-sys-color-on-surface: #1C1B1F;
+            --md-sys-color-surface-variant: #E7E0EC;
+            --md-sys-color-on-surface-variant: #49454F;
+            --md-sys-color-outline: #79747E;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Noto Serif Devanagari', sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-background); }
+        .top-app-bar { background-color: var(--md-sys-color-surface); }
+        .card { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
+        .btn-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        *:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 2px; border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="app-container" class="max-w-2xl mx-auto px-4">
+        
+        <header class="top-app-bar sticky top-0 z-10 w-full shadow-md py-4 px-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                 <a href="/index.html" class="p-2 rounded-full hover:bg-gray-200 -ml-2" title="मुख्य पृष्ठ">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+                </a>
+                <h1 class="text-xl font-medium">जानकारी</h1>
+            </div>
+             <a href="/admin.html" class="p-2 rounded-full hover:bg-gray-200" title="एडमिन पैनल">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
+            </a>
+        </header>
+
+        <main class="pt-4 pb-20 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <a href="/admin.html" class="btn-primary font-medium py-3 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center">
+                    <span>एडमिन लॉगिन</span>
+                </a>
+                <a href="/signup.html" class="bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)] font-medium py-3 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center">
+                    <span>नया अकाउंट बनाएं</span>
+                </a>
+            </div>
+
+            <div class="card p-6 rounded-2xl">
+                <h2 class="text-xl font-medium mb-2">कैसे उपयोग करें</h2>
+                <p class="text-sm opacity-80">यह ऐप आपको अपने शहर की मस्जिदों में नमाज़ के समय की जानकारी देता है। आप मस्जिदों को खोज सकते हैं, फ़िल्टर कर सकते हैं और अपनी पसंदीदा मस्जिदों को स्टार कर सकते हैं ताकि वे सूची में सबसे ऊपर दिखाई दें।</p>
+            </div>
+             <div class="card p-6 rounded-2xl">
+                <h2 class="text-xl font-medium mb-2">बग रिपोर्ट करें</h2>
+                <p class="text-sm opacity-80">यदि आपको कोई तकनीकी समस्या आती है, जैसे कोई बटन काम नहीं कर रहा है या जानकारी गलत दिख रही है, तो कृपया हमें बताएं। अपनी रिपोर्ट में डिवाइस और ब्राउज़र का उल्लेख करना न भूलें।</p>
+            </div>
+             <div class="card p-6 rounded-2xl">
+                <h2 class="text-xl font-medium mb-2">नए विचारों का सुझाव दें</h2>
+                <p class="text-sm opacity-80">क्या आपके पास इस ऐप को बेहतर बनाने के लिए कोई विचार है? हम हमेशा नए सुझावों का स्वागत करते हैं। हमें बताएं कि आप कौन सी नई सुविधाएँ देखना चाहेंगे।</p>
+            </div>
+             <div class="card p-6 rounded-2xl">
+                <h2 class="text-xl font-medium mb-2">संपर्क करें</h2>
+                <p class="text-sm opacity-80">किसी भी अन्य प्रश्न या सहायता के लिए, आप हमसे [your-email@example.com] पर संपर्क कर सकते हैं। हम जल्द से जल्द जवाब देने की कोशिश करेंगे।</p>
+            </div>
+        </main>
+    </div>
+    
+</body>
+</html>
+

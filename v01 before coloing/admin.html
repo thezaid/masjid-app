@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>एडमिन पैनल</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;500;700&display=swap">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -31,7 +30,7 @@
             --md-sys-color-outline: #79747E;
         }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Noto Sans', sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-background); }
+        body { font-family: 'Noto Serif Devanagari', sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-background); }
         body.modal-open { overflow: hidden; }
         .top-app-bar { background-color: var(--md-sys-color-surface); }
         .card { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
@@ -76,22 +75,6 @@
         .combobox-option { padding: 0.5rem 1rem; cursor: pointer; }
         .combobox-option:hover { background-color: var(--md-sys-color-primary-container); }
         *:focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 2px; border-radius: 4px; }
-        .nav-drawer {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-        }
-        .nav-drawer.open {
-            transform: translateX(0);
-        }
-        .nav-overlay {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s;
-        }
-        .nav-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
     </style>
 </head>
 <body class="antialiased">
@@ -132,8 +115,8 @@
                             <input type="password" id="password" class="form-input" required autocomplete="new-password">
                         </div>
                         <button type="submit" class="w-full btn-primary font-medium py-3 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center">
-                            <span>लॉगिन करें</span>
-                            <i class="fa-solid fa-right-to-bracket ml-2"></i>
+                             <span>लॉगिन करें</span>
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
                         </button>
                     </form>
                 </div>
@@ -147,11 +130,11 @@
                             <p id="profile-email" class="mt-1"></p>
                         </div>
                         <div>
-                            <label for="nickname" class="block mb-1 font-medium">उपनाम</label>
-                            <div class="flex items-center gap-2">
+                             <label for="nickname" class="block mb-1 font-medium">उपनाम</label>
+                             <div class="flex items-center gap-2">
                                 <input type="text" id="nickname" class="form-input" placeholder="आपका उपनाम..." required minlength="3">
                                 <button type="submit" class="btn-primary px-4 py-3 rounded-full flex-shrink-0">सेव करें</button>
-                            </div>
+                             </div>
                         </div>
                     </form>
                     <div>
@@ -177,15 +160,11 @@
                     </div>
                  </div>
             </div>
-            
-            <div id="suggestions-view" class="hidden space-y-3">
-                <!-- Suggestions will be loaded here -->
-            </div>
 
             <div id="admin-dashboard" class="hidden">
                  <div class="mb-4 mt-4">
                     <button id="add-mosque-btn" class="w-full bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)] font-medium py-3 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center">
-                        <i class="fa-solid fa-plus mr-2"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         नई मस्जिद जोड़ें
                     </button>
                 </div>
@@ -204,13 +183,13 @@
                     <input type="text" id="alternative_names" placeholder="Alternative Names (comma separated)..." class="form-input w-full">
                     <div class="flex flex-wrap gap-2">
                          <div class="relative flex-grow">
-                            <input type="text" id="city" placeholder="शहर" class="form-input w-full" required autocomplete="off">
-                            <div id="city-dropdown" class="combobox-dropdown hidden"></div>
-                        </div>
+                             <input type="text" id="city" placeholder="शहर" class="form-input w-full" required autocomplete="off">
+                             <div id="city-dropdown" class="combobox-dropdown hidden"></div>
+                         </div>
                          <div class="relative flex-grow">
-                            <input type="text" id="tag" placeholder="टैग" class="form-input w-full" autocomplete="off">
-                            <div id="tag-dropdown" class="combobox-dropdown hidden"></div>
-                        </div>
+                             <input type="text" id="tag" placeholder="टैग" class="form-input w-full" autocomplete="off">
+                             <div id="tag-dropdown" class="combobox-dropdown hidden"></div>
+                         </div>
                     </div>
                 </div>
                 <div class="space-y-6">
@@ -241,10 +220,10 @@
                 </div>
                 <div class="flex justify-end gap-3 pt-6 mt-4">
                     <button type="button" id="cancel-btn" class="icon-btn bg-gray-200 text-gray-700" title="रद्द करें">
-                         <i class="fa-solid fa-xmark fa-lg"></i>
+                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                     <button type="submit" id="save-btn" class="btn-primary icon-btn" title="सेव करें">
-                       <i class="fa-solid fa-check fa-lg"></i>
+                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
                     </button>
                 </div>
             </form>
@@ -275,7 +254,6 @@
             const profileUpdateCount = document.getElementById('profile-update-count');
             const headerLeft = document.getElementById('header-left');
             const headerRight = document.getElementById('header-right');
-            const suggestionsView = document.getElementById('suggestions-view');
             
             let allMosquesAdmin = [];
             let uniqueCities = [];
@@ -351,38 +329,33 @@
             }
             
             function navigateTo(view) {
-                [loginView, profileView, adminDashboard, suggestionsView].forEach(v => v.classList.add('hidden'));
+                [loginView, profileView, adminDashboard].forEach(v => v.classList.add('hidden'));
                 const targetView = document.getElementById(view);
                 if(targetView) targetView.classList.remove('hidden');
                 
                 headerRight.innerHTML = '';
                 headerLeft.innerHTML = `<h1 id="page-title" class="text-xl font-medium">एडमिन पैनल</h1>`;
 
-                if(view === 'profile-view' || view === 'suggestions-view') {
-                     headerLeft.innerHTML = `
-                        <button id="back-to-dash" class="p-2 rounded-full hover:bg-gray-200 -ml-2" title="वापस">
-                            <i class="fa-solid fa-arrow-left"></i>
-                        </button>
-                        <h1 class="text-xl font-medium">${view === 'profile-view' ? 'प्रोफ़ाइल' : 'सुझाव'}</h1>
+                if(view === 'profile-view') {
+                    headerLeft.innerHTML = `
+                         <button id="back-to-dash" class="p-2 rounded-full hover:bg-gray-200 -ml-2" title="वापस">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+                         </button>
+                         <h1 class="text-xl font-medium">प्रोफ़ाइल</h1>
                     `;
                     document.getElementById('back-to-dash').addEventListener('click', () => navigateTo('admin-dashboard'));
                 } else if (view === 'admin-dashboard') {
                     headerLeft.innerHTML = `<h1 class="text-xl font-medium">मस्जिद प्रबंधन</h1>`;
                     headerRight.innerHTML = `
-                        <button id="suggestions-btn" class="p-2 rounded-full hover:bg-gray-200 relative" title="सुझाव">
-                           <i class="fa-solid fa-bell fa-xl"></i>
-                           <span id="suggestion-badge" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 hidden"></span>
-                        </button>
-                        <button id="profile-btn" class="p-2 rounded-full hover:bg-gray-200" title="प्रोफ़ाइल">
-                           <i class="fa-solid fa-user fa-xl"></i>
-                        </button>
-                        <button id="logout-btn" class="p-2 rounded-full hover:bg-gray-200" title="लॉगआउट">
-                            <i class="fa-solid fa-right-from-bracket fa-xl"></i>
-                        </button>
+                         <button id="profile-btn" class="p-2 rounded-full hover:bg-gray-200" title="प्रोफ़ाइल">
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                         </button>
+                         <button id="logout-btn" class="p-2 rounded-full hover:bg-gray-200" title="लॉगआउट">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                         </button>
                     `;
                     document.getElementById('logout-btn').addEventListener('click', handleLogout);
                     document.getElementById('profile-btn').addEventListener('click', () => navigateTo('profile-view'));
-                    document.getElementById('suggestions-btn').addEventListener('click', () => navigateTo('suggestions-view'));
                 }
             }
 
@@ -395,7 +368,6 @@
                     loadProfileData();
                     await fetchAdminData();
                     renderAdminList();
-                    loadSuggestions();
                 } else {
                     sessionStartTime = null;
                     navigateTo('login-view');
@@ -456,10 +428,10 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button data-id="${mosque.id}" class="edit-btn icon-btn bg-[var(--md-sys-color-secondary-container)] text-[var(--md-sys-color-on-secondary-container)]" title="संपादित करें">
-                                <i class="fa-solid fa-pencil"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                             </button>
                             <button data-id="${mosque.id}" class="delete-btn icon-btn bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)]" title="हटाएं">
-                               <i class="fa-solid fa-trash"></i>
+                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                             </button>
                         </div>
                     </div>`).join('');
@@ -603,80 +575,6 @@
             });
 
             cancelBtn.addEventListener('click', closeModal);
-            
-            // --- Suggestions Logic ---
-            async function loadSuggestions() {
-                const { data, error } = await supabase
-                    .from('suggestions')
-                    .select(`
-                        *,
-                        masjids ( name )
-                    `)
-                    .eq('is_reviewed', false)
-                    .order('created_at', { ascending: true });
-
-                if (error) {
-                    showAlert('त्रुटि', `सुझाव लोड नहीं हो सके: ${error.message}`);
-                    return;
-                }
-                renderSuggestions(data);
-                const badge = document.getElementById('suggestion-badge');
-                if (badge && data.length > 0) badge.classList.remove('hidden');
-                else if(badge) badge.classList.add('hidden');
-            }
-            
-            function renderSuggestions(suggestions) {
-                 if (suggestions.length === 0) {
-                     suggestionsView.innerHTML = '<p class="text-center text-gray-500 mt-8">कोई नए सुझाव नहीं हैं।</p>';
-                     return;
-                 }
-                 suggestionsView.innerHTML = suggestions.map(s => {
-                     return `
-                         <div class="card p-4 rounded-xl space-y-3">
-                             <h3 class="font-medium">${s.masjids.name} - ${s.prayer_name}</h3>
-                             <div class="text-sm">
-                                 <p><strong>अज़ान:</strong> ${s.azan_time || 'N/A'}</p>
-                                 <p><strong>जमात:</strong> ${s.jamaat_time || 'N/A'}</p>
-                                 ${s.notes ? `<p class="mt-2"><strong>नोट्स:</strong> ${s.notes}</p>`: ''}
-                             </div>
-                             <div class="flex justify-end gap-2">
-                                 <button data-id="${s.id}" class="dismiss-btn px-4 py-2 text-sm rounded-full bg-gray-200 text-gray-700">खारिज</button>
-                                 <button data-id="${s.id}" data-masjid-id="${s.masjid_id}" data-prayer="${s.prayer_name}" data-azan="${s.azan_time}" data-jamaat="${s.jamaat_time}" class="approve-btn px-4 py-2 text-sm rounded-full btn-primary">मंज़ूर</button>
-                             </div>
-                         </div>
-                       `
-                 }).join('');
-            }
-            
-            suggestionsView.addEventListener('click', async (e) => {
-                 const target = e.target;
-                 const suggestionId = target.dataset.id;
-                 if(!suggestionId) return;
-
-                 if(target.classList.contains('dismiss-btn')) {
-                    const { error } = await supabase.from('suggestions').update({ is_reviewed: true }).eq('id', suggestionId);
-                    if(error) showAlert('त्रुटि', 'सुझाव खारिज नहीं किया जा सका।');
-                    else loadSuggestions();
-                 }
-
-                 if(target.classList.contains('approve-btn')) {
-                    const { masjidId, prayer, azan, jamaat } = target.dataset;
-                    
-                    let updateData = {};
-                    if(azan) updateData[`${prayer}_azan`] = azan;
-                    if(jamaat) updateData[`${prayer}_jamaat`] = jamaat;
-                    
-                    const { error } = await supabase.from('masjids').update(updateData).eq('id', masjidId);
-                    if(error) {
-                         showAlert('त्रुटि', `समय अपडेट नहीं हो सका: ${error.message}`);
-                    } else {
-                        await supabase.from('suggestions').update({ is_reviewed: true }).eq('id', suggestionId);
-                        showAlert('सफलता', 'समय सफलतापूर्वक अपडेट किया गया।');
-                        loadSuggestions();
-                    }
-                 }
-            });
-
 
             checkUserSession();
         });

